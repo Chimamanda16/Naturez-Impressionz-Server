@@ -18,7 +18,6 @@ const checkAuth = async(req, res) => {
     sameSite: "lax",
     secure: false, // true in production
   });
-
   res.status(201).json({ status: "Logged in!" });
 };
 
