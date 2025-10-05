@@ -33,7 +33,7 @@ metaRouter.get("/og/:id", async (req, res) => {
         <meta property="og:title" content="${post.title} | NINews Blog" />
         <meta property="og:description" content="Reporting News with Clarity and Credibility" />
         <meta property="og:image" content="${post.coverImg}" />
-        <meta property="og:url" content="https://ninnews.com/blog/${post.date}/${slug}" />
+        <meta property="og:url" content="https://ninnews.com/blog/${post._id}/${post.date}/${slug}" />
         <meta property="og:type" content="article" />
       </head>
       <body>
