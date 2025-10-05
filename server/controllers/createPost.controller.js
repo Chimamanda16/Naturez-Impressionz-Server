@@ -38,9 +38,9 @@ const getPosts = async() =>{
 }
 
 //Get particular post
-const getPost = async(date, title) =>{
+const getPost = async(id) =>{
     let post;
-    await Post.findOne({date: date, title: title}).then((result) =>{
+    await Post.findOne({_id: id}).then((result) =>{
         post = result;
     });
     return post;

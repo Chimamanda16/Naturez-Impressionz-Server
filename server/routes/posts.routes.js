@@ -8,9 +8,9 @@ postRouter.get("/posts", async(req, res) =>{
     res.status(201).json({data: posts});
 });
 
-postRouter.get(`/post/:date/:title`, async(req, res) =>{
-    let {date, title} = req.params;
-    const post = await getPost(date, title);
+postRouter.get(`/post/:id`, async(req, res) =>{
+    let {id} = req.params;
+    const post = await getPost(id);
     res.status(201).json({data: post})
 });
 
