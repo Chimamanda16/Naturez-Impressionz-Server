@@ -8,6 +8,7 @@ import adminRouter from "./routes/admin.routes.js"
 import csrf from "csurf";
 import cookieParser from "cookie-parser"
 import jwt from "jsonwebtoken"
+import metaRouter from "./routes/meta.routes.js";
 
 const app = express();
 dotenv.config();
@@ -36,6 +37,7 @@ app.use(cookieParser());
 app.use("/api", postRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/", metaRouter)
 // CSRF token route
 const csrfProtection = csrf({ cookie: true });
 
