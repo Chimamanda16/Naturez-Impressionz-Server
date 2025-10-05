@@ -18,8 +18,8 @@ const checkAuth = async(req, res) => {
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "5h" });
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    sameSite: "none",
+    secure: true,
   });
   res.status(201).json({user: user._id}, { status: "Logged in!" });
 };
@@ -27,8 +27,8 @@ const checkAuth = async(req, res) => {
 const logOut = async(req, res) =>{
   res.clearCookie("token", {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true,
   });
   res.status(200).json({ status: "Logged out!" });
 }
