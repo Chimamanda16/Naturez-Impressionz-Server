@@ -10,10 +10,10 @@ const checkAuth = async(req, res) => {
   const { email, password } = req.body;
   //Get user by email
   const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ error: "Invalid email" });
+  if (!user) return res.status(401).json({ error: "Invalid credentials" });
   //Check if password is accurate
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: "Invalid password" });
+  if (!match) return res.status(401).json({ error: "Invalid credentials" });
   //create token
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "5h" });
   res.cookie("token", token, {
@@ -21,7 +21,7 @@ const checkAuth = async(req, res) => {
     sameSite: "lax",
     secure: false,
   });
-  res.status(201).json({ status: "Logged in!" });
+  res.status(201).json({user: user._id}, { status: "Logged in!" });
 };
 
 const logOut = async(req, res) =>{
