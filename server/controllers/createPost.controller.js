@@ -1,5 +1,17 @@
 import Post from "../models/blog.js";
 
+function isBot(userAgent = "") {
+  const bots = [
+    "facebookexternalhit",
+    "twitterbot",
+    "linkedinbot",
+    "slackbot",
+    "discordbot",
+    "whatsapp"
+  ];
+  return bots.some(bot => userAgent.toLowerCase().includes(bot));
+}
+
 //Create and save a new post
 const createPost = async(post, sectionName) =>{
     try{
@@ -43,6 +55,26 @@ const getPost = async(id) =>{
     await Post.findOne({_id: id}).then((result) =>{
         post = result;
     });
+    if(!post) return(res.status(404).send("Post not Found")) 
+    if (isBot(req.headers["user-agent"])) {
+    return res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <title>${post.title} | NINews Blog</title>
+                <meta name="description" content="Reporting News with Clarity and Credibility" />
+                <meta property="og:title" content="${post.title} | NINews Blog" />
+                <meta property="og:description" content="Reporting News with Clarity and Credibility" />
+                <meta property="og:image" content="${post.coverImg}" />
+                <meta property="og:url" content="https://ninnews.com/blog/${post._id}/${post.date}/${slug}" />
+                <meta property="og:type" content="article" />
+            </head>
+            <body>
+                <h1>${post.title}</h1>
+            </body>
+        </html>
+    `);
+    }
     return post;
 }
 
