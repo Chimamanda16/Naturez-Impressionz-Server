@@ -58,12 +58,12 @@ const getPosts = async() =>{
 }
 
 //Get particular post
-const getPost = async(id, req) =>{
+const getPost = async(id, req, res) =>{
     let post;
     await Post.findOne({_id: id}).then((result) =>{
         post = result;
     });
-    console.log(post)
+    console.log(post.title, req.headers["user-agent"])
     if(!post) return(res.status(404).send("Post not Found")) 
     if (isBot(req.headers["user-agent"])) {
         let slug = slugify(post.title)
