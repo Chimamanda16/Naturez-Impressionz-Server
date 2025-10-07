@@ -10,7 +10,7 @@ postRouter.get("/posts", async(req, res) =>{
 
 postRouter.get(`/post/:id`, async(req, res) =>{
     let {id} = req.params;
-    const post = await getPost(id);
+    const post = await getPost(id, req);
     res.status(201).json({data: post})
 });
 

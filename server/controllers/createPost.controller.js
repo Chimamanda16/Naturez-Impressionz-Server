@@ -50,7 +50,7 @@ const getPosts = async() =>{
 }
 
 //Get particular post
-const getPost = async(id) =>{
+const getPost = async(id, req) =>{
     let post;
     await Post.findOne({_id: id}).then((result) =>{
         post = result;
