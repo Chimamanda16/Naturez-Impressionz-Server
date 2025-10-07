@@ -24,14 +24,13 @@ const models = {
 }
 
 const adminRouter = express.Router();
+let csrfProtection = csrf({ cookie: true });
 
-adminRouter.post("/post/create/:section", csrf({ cookie: true }),  async (req, res)=>{
+adminRouter.post("/post/create/:section", csrfProtection,  async (req, res)=>{
     try{
         const post = req.body;
         const section = req.params.section;
-        console.log(post, section);
         let newPost = await createPost(post, models[section.toLowerCase()]);
-        console.log(section);
         if(newPost){
             res.status(201).json({message: "Post has been saved successfully"});
         }

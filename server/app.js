@@ -32,16 +32,17 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-
 app.use("/api", postRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+
 // CSRF token route
 const csrfProtection = csrf({ cookie: true });
 
 app.get("/api/csrf-token", csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
+
 app.get("/api/me", (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Not logged in" });
@@ -53,7 +54,7 @@ app.get("/api/me", (req, res) => {
     res.status(403).json({ error: "Invalid token" });
   }
 });
-app.get("/", (req, res) =>{
+app.get("/", csrfProtection, (req, res) =>{
     res.send("Hello")
 });
 
