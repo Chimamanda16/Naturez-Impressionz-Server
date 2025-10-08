@@ -24,7 +24,13 @@ const models = {
 }
 
 const adminRouter = express.Router();
-let csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf({ 
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None"
+  } 
+});
 
 adminRouter.post("/post/create/:section", csrfProtection,  async (req, res)=>{
     try{
