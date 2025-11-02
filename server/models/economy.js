@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const econSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const econSchema = new mongoose.Schema({
 
 const Economy = mongoose.model("Economy", econSchema);
 
-export default Economy;
+module.exports = Economy;

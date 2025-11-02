@@ -1,5 +1,5 @@
-import express from "express";
-import { getPosts, getPost } from "../controllers/createPost.controller.js";
+const express = require("express");
+const { getPosts, getPost } = require("../controllers/createPost.controller.js");
 
 const postRouter = express.Router();
 
@@ -14,4 +14,4 @@ postRouter.get(`/post/:id`, async(req, res) =>{
     res.status(201).json({data: post})
 });
 
-export default postRouter;
+module.exports = postRouter;

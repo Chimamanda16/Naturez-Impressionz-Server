@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const envSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const envSchema = new mongoose.Schema({
 
 const Environment = mongoose.model("Environment", envSchema);
 
-export default Environment;
+module.exports = Environment;

@@ -1,4 +1,4 @@
-import Post from "../models/blog.js";
+const Post = require("../models/blog.js");
 
 function isBot(userAgent = "") {
   const bots = [
@@ -89,4 +89,4 @@ const getPost = async(id, req, res) =>{
     return post;
 }
 
-export  {createPost, getPosts, getPost};
+module.exports = {createPost, getPosts, getPost};

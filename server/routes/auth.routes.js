@@ -1,6 +1,6 @@
-import express from "express";
-import { checkAuth, logOut } from "../controllers/auth.controller.js";
-import csrf from "csurf";
+const express = require("express");
+const { checkAuth, logOut } = require("../controllers/auth.controller.js");
+const csrf = require("csurf");
 
 const authRouter = express.Router();
 const csrfProtection = csrf({ 
@@ -18,4 +18,4 @@ authRouter.post("/logout", csrfProtection, async (req, res) => {
    logOut(req, res);
 });
 
-export default authRouter;
+module.exports =  authRouter;

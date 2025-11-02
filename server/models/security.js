@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const secSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const secSchema = new mongoose.Schema({
 
 const Security = mongoose.model("Security", secSchema);
 
-export default Security;
+module.exports = Security;

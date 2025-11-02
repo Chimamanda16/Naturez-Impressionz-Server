@@ -1,15 +1,15 @@
-import express from "express";
-import csrf from "csurf"
-import { createPost } from "../controllers/createPost.controller.js";
-import Economy from "../models/economy.js";
-import Education from "../models/education.js";
-import Environment from "../models/environment.js";
-import Health from "../models/health.js";
-import Lifestyle from "../models/lifestyle.js";
-import Politics from "../models/politics.js";
-import Security from "../models/security.js";
-import Tech from "../models/tech.js";
-import Life from "../models/lifestyle.js";
+const express = require("express");
+const csrf = require("csurf"); 
+const { createPost } = require("../controllers/createPost.controller.js");
+const Economy = require("../models/economy.js");
+const Education = require("../models/education.js");
+const Environment = require("../models/environment.js");
+const Health = require("../models/health.js");
+const Lifestyle = require("../models/lifestyle.js");
+const Politics = require("../models/politics.js");
+const Security = require("../models/security.js");
+const Tech = require("../models/tech.js");
+const Life = require("../models/lifestyle.js");
 
 const models = {
     economy: Economy,
@@ -50,4 +50,4 @@ adminRouter.post("/post/create/:section", csrfProtection,  async (req, res)=>{
     }
 });
 
-export default adminRouter;
+module.exports = adminRouter;

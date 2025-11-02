@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const lifeSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const lifeSchema = new mongoose.Schema({
 
 const Life = mongoose.model("Life", lifeSchema);
 
-export default Life;
+module.exports = Life;

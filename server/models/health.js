@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const healthSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const healthSchema = new mongoose.Schema({
 
 const Health = mongoose.model("Health", healthSchema);
 
-export default Health;
+module.exports = Health;

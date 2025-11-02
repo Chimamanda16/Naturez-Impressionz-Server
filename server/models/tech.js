@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const techSchema = new mongoose.Schema({
   title: String,
@@ -11,4 +11,4 @@ const techSchema = new mongoose.Schema({
 
 const Tech = mongoose.model("Tech", techSchema);
 
-export default Tech;
+module.exports = Tech;
