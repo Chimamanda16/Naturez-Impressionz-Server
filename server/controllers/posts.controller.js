@@ -21,16 +21,8 @@ function slugify(text) {
 }
 
 //Create and save a new post
-const createPost = async(post, sectionName) =>{
+const createPost = async(post) =>{
     try{
-        const newSectionPost = new sectionName({
-            title: post.title,
-            body: post.body,
-            coverImg: post.coverImg,
-            tags: post.tags,
-            author: post.author,
-            date: post.date
-        })
          const newPost = new Post({
             title: post.title,
             body: post.body,
@@ -39,9 +31,8 @@ const createPost = async(post, sectionName) =>{
             author: post.author,
             date: post.date
         })
-        await newSectionPost.save();
         await newPost.save();
-        return (newPost, newSectionPost);
+        return (newPost);
     }
     catch(err){
         console.error(err);
