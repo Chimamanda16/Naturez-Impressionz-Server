@@ -80,4 +80,28 @@ const getPost = async(id, req, res) =>{
     return post;
 }
 
-export  {createPost, getPosts, getPost};
+//Delete a post
+const deletePost = async(id) =>{
+    try{
+        const deletedPost = await Post.findByIdAndDelete(id);
+        return deletedPost;
+    }
+    catch(err){
+        console.error(err);
+        throw err;
+    }
+}
+
+//Update a post
+const updatePost = async(id, updatedData) =>{
+    try{
+        const updatedPost = await Post.findByIdAndUpdate(id, updatedData, { new: true });
+        return updatedPost;
+    }
+    catch(err){
+        console.error(err);
+        throw err;
+    }
+}
+
+export  {createPost, getPosts, getPost, deletePost, updatePost};
