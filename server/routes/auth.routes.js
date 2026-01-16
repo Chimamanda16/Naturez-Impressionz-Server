@@ -3,13 +3,7 @@ import { checkAuth, logOut } from "../controllers/auth.controller.js";
 import csrf from "csurf";
 
 const authRouter = express.Router();
-const csrfProtection = csrf({ 
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None"
-  } 
-});
+const csrfProtection = csrf({ cookie: true });
 
 authRouter.post("/login", csrfProtection, async (req, res) => {
    checkAuth(req, res);

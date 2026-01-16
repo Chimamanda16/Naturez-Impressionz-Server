@@ -29,21 +29,15 @@ app.use(cors({
   methods: ["GET","POST","PUT","DELETE","OPTIONS"]
 }));
 
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api", postRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 
 // CSRF token route
-const csrfProtection = csrf({ 
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None"
-  } 
-});
+const csrfProtection = csrf({ cookie: true });
 
 app.get("/api/csrf-token", csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
