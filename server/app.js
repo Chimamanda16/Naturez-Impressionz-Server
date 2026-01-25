@@ -1,22 +1,17 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require('dotenv');
-const mongoose = require("mongoose");
-const postRouter = require("./routes/posts.routes.js");
-const authRouter = require("./routes/auth.routes.js");
-const adminRouter = require("./routes/admin.routes.js");
-const csrf = require("csurf");
-const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
+import express from "express";
+import cors from "cors";
+import dotenv from 'dotenv';
+import mongoose from "mongoose";
+import postRouter from "./routes/posts.routes.js";
+import authRouter from "./routes/auth.routes.js";
+import adminRouter from "./routes/admin.routes.js";
+import csrf from "csurf";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 
 const app = express();
 dotenv.config();
-mongoose.connect(process.env.MONGO_URI,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }
-);
+mongoose.connect(process.env.MONGO_URI);
 const allowed = ["http://localhost:5173", "https://ninews.ng"];
 
 app.use(cors({
@@ -58,4 +53,8 @@ app.get("/", csrfProtection, (req, res) =>{
     res.send("Hello")
 });
 
-module.exports = app;
+app.listen(process.env.PORT, (req, res) =>{
+  console.log("Started on port something");
+})
+
+export default app;
