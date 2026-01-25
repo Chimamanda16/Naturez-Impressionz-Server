@@ -1,4 +1,4 @@
-import Post from "../models/blog.js";
+const Post = require("../models/blog.js");
 
 function isBot(userAgent = "") {
   const bots = [

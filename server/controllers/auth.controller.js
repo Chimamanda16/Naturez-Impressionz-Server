@@ -1,7 +1,7 @@
-import User from '../models/user.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import dotenv from "dotenv";
+const User = require("../models/user.js")
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -33,4 +33,4 @@ const logOut = async(req, res) =>{
   res.status(200).json({ status: "Logged out!" });
 }
 
-export {checkAuth, logOut};
+module.exports = {checkAuth, logOut};

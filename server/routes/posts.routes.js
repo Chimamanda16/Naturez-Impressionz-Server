@@ -14,4 +14,4 @@ postRouter.get(`/post/:id`, async(req, res) =>{
     res.status(201).json({data: post})
 });
 
-export default postRouter;
+module.exports = postRouter;
