@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const checkAuth = async(req, res) => {
+  console.log("Entered  auth")
   //Get email and password
   const { email, password } = req.body;
   //Get user by email
@@ -13,7 +14,9 @@ const checkAuth = async(req, res) => {
   if (!user) return res.status(401).json({ error: "Invalid credentials" });
   //Check if password is accurate
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: "Invalid credentials" });
+  if (!match){
+    console.log("Passwords do not match")
+    return res.status(401).json({ error: "Invalid credentials" });}
   //create token
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "5h" });
   res.cookie("token", token, {
