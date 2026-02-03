@@ -72,7 +72,7 @@ const getPost = async(id, req, res) =>{
                     <meta property="og:description" content="${bodyPreview}..." />
                     <meta property="og:image" content="${post.coverImg}" />
                     <meta property="og:image:type" content="image/webp" />
-                    <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${slug}" />
+                    <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${post.date}/${slug}" />
                     <meta property="og:type" content="article" />
                     <meta name="twitter:card" content="summary_large_image" />
                     <meta name="twitter:title" content="${sanitizeText(post.title)}" />
