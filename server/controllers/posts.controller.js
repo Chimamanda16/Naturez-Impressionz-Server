@@ -57,20 +57,30 @@ const getPost = async(id, req, res) =>{
     if(!post) return(res.status(404).send("Post not Found")) 
     if (isBot(req.headers["user-agent"])) {
         let slug = slugify(post.title)
+        // Sanitize text to prevent XSS and HTML breaking
+        const sanitizeText = (text) => text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const bodyPreview = sanitizeText(post.body).substring(0, 160); // First 160 chars
+        
         return res.send(`
             <!DOCTYPE html>
             <html lang="en">
                 <head>
-                    <title>${post.title} | NINews Blog</title>
-                    <meta name="description" content="Reporting News with Clarity and Credibility" />
-                    <meta property="og:title" content="${post.title} | NINews Blog" />
-                    <meta property="og:description" content="Reporting News with Clarity and Credibility" />
+                    <meta charset="UTF-8" />
+                    <title>${sanitizeText(post.title)} | Naturez Impressionz</title>
+                    <meta name="description" content="${bodyPreview}..." />
+                    <meta property="og:title" content="${sanitizeText(post.title)}" />
+                    <meta property="og:description" content="${bodyPreview}..." />
                     <meta property="og:image" content="${post.coverImg}" />
-                    <meta property="og:url" content="https://ninews.com/blog/${post._id}/${post.date}/${slug}" />
+                    <meta property="og:image:type" content="image/webp" />
+                    <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${slug}" />
                     <meta property="og:type" content="article" />
+                    <meta name="twitter:card" content="summary_large_image" />
+                    <meta name="twitter:title" content="${sanitizeText(post.title)}" />
+                    <meta name="twitter:description" content="${bodyPreview}..." />
+                    <meta name="twitter:image" content="${post.coverImg}" />
                 </head>
                 <body>
-                    <h1>${post.title}</h1>
+                    <h1>${sanitizeText(post.title)}</h1>
                 </body>
             </html>
         `);

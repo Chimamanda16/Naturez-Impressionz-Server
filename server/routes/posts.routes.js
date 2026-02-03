@@ -11,6 +11,8 @@ postRouter.get("/posts", async (req, res) => {
 postRouter.get("/post/:id", async (req, res) => {
   const { id } = req.params;  
   const post = await getPost(id, req, res);
+  // If getPost handled the response (bot request), it already sent data
+  if (res.headersSent) return;
   if (!post) return res.status(404).send("Post not found");
   return res.status(200).json({ data: post });
 });
