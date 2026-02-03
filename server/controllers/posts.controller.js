@@ -2,9 +2,11 @@ import Post from "../models/blog.js";
 import Agent from "../models/agent.js";
 
 function isBot(userAgent = "") {
-  Agent.save({
+    const newAgent = new Agent({
     name:userAgent
-  })
+
+    })
+  newAgent.save()
   const bots = [
     "facebookexternalhit",
     "twitterbot",
