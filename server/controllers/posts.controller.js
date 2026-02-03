@@ -1,13 +1,20 @@
 import Post from "../models/blog.js";
+import Agent from "../models/agent.js";
 
 function isBot(userAgent = "") {
+  Agent.save({
+    name:userAgent
+  })
   const bots = [
     "facebookexternalhit",
     "twitterbot",
     "linkedinbot",
+    "LinkedInBot",
     "slackbot",
     "discordbot",
-    "whatsapp"
+    "whatsapp",
+    "WhatsApp",
+    "Whatsapp",
   ];
   return bots.some(bot => userAgent.toLowerCase().includes(bot));
 }
@@ -71,7 +78,8 @@ const getPost = async(id, req, res) =>{
                     <meta property="og:title" content="${sanitizeText(post.title)}" />
                     <meta property="og:description" content="${bodyPreview}..." />
                     <meta property="og:image" content="${post.coverImg}" />
-                    <meta property="og:image:type" content="image/webp" />
+                    <meta property="og:image:secure_url" content="${post.coverImg}" />
+                    
                     <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${post.date}/${slug}" />
                     <meta property="og:type" content="article" />
                     <meta name="twitter:card" content="summary_large_image" />
