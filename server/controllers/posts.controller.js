@@ -50,34 +50,37 @@ const getPosts = async() =>{
 }
 
 //Get particular post
-const getPost = async (req, res) => {
-  const { id } = req.params;
-  const post = await Post.findById(id);
-  if (!post) return res.status(404).send("Post not found");
-
-  const ua = req.headers["user-agent"] || "";
-
-  if (isBot(ua)) {
-    const slug = slugify(post.title);
-    return res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${post.title}</title>
-          <meta property="og:title" content="${post.title}" />
-          <meta property="og:description" content="Reporting News with Clarity and Credibility" />
-          <meta property="og:image" content="https://ninews.ng${post.coverImg}" />
-          <meta property="og:url" content="https://ninews.ng/blog/${id}/${slug}" />
-          <meta property="og:type" content="article" />
-        </head>
-        <body></body>
-      </html>
-    `);
-  }
-
-  // normal users
-  return res.json(post);
-};
+const getPost = async(id, req, res) =>{
+    let post;
+    await Post.findOne({_id: id}).then((result) =>{
+        post = result;
+    });
+    console.log(post.coverImg, req.headers["user-agent"])
+    if(!post) return(res.status(404).send("Post not Found")) 
+    if (isBot(req.headers["user-agent"])) {
+        let slug = slugify(post.title)
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <title>${post.title} | NINews Blog</title>
+                    <meta name="description" content="Reporting News with Clarity and Credibility" />
+                    <meta property="og:title" content="${post.title} | NINews Blog" />
+                    <meta property="og:description" content="Reporting News with Clarity and Credibility" />
+                    <meta property="og:image" content="${post.coverImg}" />
+                    <meta property="og:image:secure_url" content="${post.coverImg}" />
+                    <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${post.date}/${slug}" />
+                    <meta property="og:type" content="article" />
+                </head>
+                <body>
+                    <h1>${post.title}</h1>
+                </body>
+            </html>
+        `);
+        return post;
+    }
+    return post;
+}
 
 
 //Delete a post
