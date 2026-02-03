@@ -7,8 +7,7 @@ function isBot(userAgent = "") {
     "linkedinbot",
     "slackbot",
     "discordbot",
-    "whatsapp",
-    "whatsappbot"
+    "whatsapp"
   ];
   return bots.some(bot => userAgent.toLowerCase().includes(bot));
 }
@@ -55,7 +54,7 @@ const getPost = async(id, req, res) =>{
     await Post.findOne({_id: id}).then((result) =>{
         post = result;
     });
-    console.log(post.coverImg, req.headers["user-agent"])
+    console.log(post.title, req.headers["user-agent"])
     if(!post) return(res.status(404).send("Post not Found")) 
     if (isBot(req.headers["user-agent"])) {
         let slug = slugify(post.title)
@@ -68,7 +67,6 @@ const getPost = async(id, req, res) =>{
                     <meta property="og:title" content="${post.title} | NINews Blog" />
                     <meta property="og:description" content="Reporting News with Clarity and Credibility" />
                     <meta property="og:image" content="${post.coverImg}" />
-                    <meta property="og:image:secure_url" content="${post.coverImg}" />
                     <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${post.date}/${slug}" />
                     <meta property="og:type" content="article" />
                 </head>
@@ -81,7 +79,6 @@ const getPost = async(id, req, res) =>{
     }
     return post;
 }
-
 
 //Delete a post
 const deletePost = async(id) =>{
