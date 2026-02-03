@@ -24,7 +24,7 @@ postRouter.get(`/post/:id`, async(req, res) =>{
       .trim()
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-");
-
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
     return res.send(`
       <!DOCTYPE html>
       <html lang="en">
