@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken";
 const app = express();
 dotenv.config();
 mongoose.connect(process.env.MONGO_URI);
-const allowed = ["http://localhost:5173", "https://ninews.ng", "http://localhost:3000", "https://ni-next.vercel.app/"];
+const allowed = ["http://localhost:5173", "https://ninews.ng", "http://localhost:3000", "https://ni-next.vercel.app"];
 
 app.use(cors({
   origin: (origin, callback) => {
