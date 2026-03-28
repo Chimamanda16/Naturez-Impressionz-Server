@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken";
 const app = express();
 dotenv.config();
 mongoose.connect(process.env.MONGO_URI);
-const allowed = ["http://localhost:5173", "https://ninews.ng", "https://www.ninews.ng", "http://localhost:3000", "https://ni-next.vercel.app"];
+const allowed = ["http://localhost:5173", "https://ninews.ng", "https://www.ninews.ng", "www.ninews.ng", "http://localhost:3000", "https://ni-next.vercel.app"];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -26,6 +26,20 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Auth middleware
+const authenticate = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ error: "Not logged in" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch(err) {
+    console.error("JWT error", err);
+    res.status(403).json({ error: "Invalid token" });
+  }
+};
 
 app.use("/api", postRouter);
 app.use("/api/auth", authRouter);

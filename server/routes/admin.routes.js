@@ -1,11 +1,26 @@
 import express from "express";
 import csrf from "csurf"
+import jwt from "jsonwebtoken";
 import { createPost, deletePost, updatePost } from "../controllers/posts.controller.js";
 
 const adminRouter = express.Router();
 let csrfProtection = csrf({ cookie: true });
 
-adminRouter.post("/post/create/", csrfProtection,  async (req, res)=>{
+// Auth middleware
+const authenticate = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ error: "Not logged in" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch(err) {
+    console.error("JWT error", err);
+    res.status(403).json({ error: "Invalid token" });
+  }
+};
+
+adminRouter.post("/post/create/", authenticate, csrfProtection,  async (req, res)=>{
     try{
         const post = req.body;
         const section = req.params.section;
@@ -23,7 +38,7 @@ adminRouter.post("/post/create/", csrfProtection,  async (req, res)=>{
     }
 });
 
-adminRouter.put("/post/:id", csrfProtection, async (req, res)=>{
+adminRouter.put("/post/:id", authenticate, csrfProtection, async (req, res)=>{
     try{
         const { id } = req.params;
         const updatedData = req.body;
@@ -41,7 +56,7 @@ adminRouter.put("/post/:id", csrfProtection, async (req, res)=>{
     }
 });
 
-adminRouter.delete("/post/:id", csrfProtection, async (req, res)=>{
+adminRouter.delete("/post/:id", authenticate, csrfProtection, async (req, res)=>{
     try{
         const { id } = req.params;
         const deletedPost = await deletePost(id);
