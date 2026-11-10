@@ -6,10 +6,10 @@ import jwt from "jsonwebtoken";
 import postRouter from "./routes/posts.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import adminRouter from "./routes/admin.routes.js";
+import Post from "./models/blog.js";
 
 dotenv.config();
 const app = express();
-mongoose.connect(process.env.MONGO_URI);
 const allowed = ["http://localhost:5173", "https://ninews.ng", "https://www.ninews.ng", "http://localhost:3000", "https://ni-next.vercel.app"];
 
 app.use(cors({
@@ -53,8 +53,19 @@ app.get("/", (req, res) => {
   res.send("Hello");
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Started on port ${process.env.PORT}`);
-});
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    await Post.createIndexes();
+    app.listen(process.env.PORT, () => {
+      console.log(`Started on port ${process.env.PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to MongoDB or create indexes", error);
+    process.exitCode = 1;
+  }
+}
+
+void startServer();
 
 export default app;

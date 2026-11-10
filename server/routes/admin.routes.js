@@ -31,7 +31,7 @@ adminRouter.post("/post/create", authenticate, async (req, res) => {
     const post = req.body;
     const newPost = await createPost(post);
     if (newPost) {
-      return res.status(201).json({ message: "Post has been saved successfully" });
+      return res.status(201).json({ message: "Post has been saved successfully", data: newPost });
     }
     return res.status(500).json({ message: "Server Error while saving post" });
   } catch (error) {

@@ -1,5 +1,6 @@
 import Post from "../models/blog.js";
 import Agent from "../models/agent.js";
+import { generateUniqueSlug, isDuplicateSlugError } from "../utils/slug.js";
 
 function isBot(userAgent = "") {
     const newAgent = new Agent({
@@ -29,22 +30,73 @@ function slugify(text) {
       .replace(/\s+/g, "-");
 }
 
+function renderPostMetadata(post, url) {
+    const sanitizeText = (text = "") => String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    const description = sanitizeText(String(post.body ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().substring(0, 160));
+    const title = sanitizeText(post.title);
+    const image = sanitizeText(post.coverImg);
+
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <title>${title} | NINews</title>
+                <meta name="description" content="${description}" />
+                <meta property="og:title" content="${title}" />
+                <meta property="og:description" content="${description}" />
+                <meta property="og:image" content="${image}" />
+                <meta property="og:image:secure_url" content="${image}" />
+                <meta property="og:url" content="${url}" />
+                <meta property="og:type" content="article" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="${title}" />
+                <meta name="twitter:description" content="${description}" />
+                <meta name="twitter:image" content="${image}" />
+            </head>
+            <body><h1>${title}</h1></body>
+        </html>
+    `;
+}
+
+function respondWithPost(post, req, res, publicUrl) {
+    if (!post) {
+        res.status(404).send("Post not Found");
+        return null;
+    }
+
+    if (isBot(req.headers["user-agent"])) {
+        res.type("html").send(renderPostMetadata(post, publicUrl));
+        return null;
+    }
+
+    return post;
+}
+
 //Create and save a new post
 const createPost = async(post) =>{
-    try{
-         const newPost = new Post({
+    const newPost = new Post({
             title: post.title,
+            slug: await generateUniqueSlug(post.title),
             body: post.body,
             coverImg: post.coverImg,
             tags: post.tags,
             author: post.author,
             date: post.date
-        })
-        await newPost.save();
-        return (newPost);
-    }
-    catch(err){
-        console.error(err);
+    });
+
+    while (true) {
+        try {
+            await newPost.save();
+            return newPost;
+        } catch (error) {
+            if (!isDuplicateSlugError(error)) throw error;
+            newPost.slug = await generateUniqueSlug(post.title);
+        }
     }
 }
 
@@ -59,43 +111,16 @@ const getPosts = async() =>{
 
 //Get particular post
 const getPost = async(id, req, res) =>{
-    let post;
-    await Post.findOne({_id: id}).then((result) =>{
-        post = result;
-    });
-    if(!post) return(res.status(404).send("Post not Found")) 
-    if (isBot(req.headers["user-agent"])) {
-        let slug = slugify(post.title)
-        // Sanitize text to prevent XSS and HTML breaking
-        const sanitizeText = (text) => text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const bodyPreview = sanitizeText(post.body).substring(0, 160); // First 160 chars
-        
-        return res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta charset="UTF-8" />
-                    <title>${sanitizeText(post.title)} | Naturez Impressionz</title>
-                    <meta name="description" content="${bodyPreview}..." />
-                    <meta property="og:title" content="${sanitizeText(post.title)}" />
-                    <meta property="og:description" content="${bodyPreview}..." />
-                    <meta property="og:image" content="${post.coverImg}" />
-                    <meta property="og:image:secure_url" content="${post.coverImg}" />
-                    
-                    <meta property="og:url" content="https://ninews.ng/blog/${post._id}/${post.date}/${slug}" />
-                    <meta property="og:type" content="article" />
-                    <meta name="twitter:card" content="summary_large_image" />
-                    <meta name="twitter:title" content="${sanitizeText(post.title)}" />
-                    <meta name="twitter:description" content="${bodyPreview}..." />
-                    <meta name="twitter:image" content="${post.coverImg}" />
-                </head>
-                <body>
-                    <h1>${sanitizeText(post.title)}</h1>
-                </body>
-            </html>
-        `);
-    }
-    return post;
+    const post = await Post.findById(id);
+    const canonicalUrl = post?.slug
+        ? `https://www.ninews.ng/${encodeURIComponent(post.slug)}`
+        : `https://www.ninews.ng/blog/${post?._id}/${encodeURIComponent(post?.date ?? "")}/${slugify(post?.title ?? "")}`;
+    return respondWithPost(post, req, res, canonicalUrl);
+}
+
+const getPostBySlug = async(slug, req, res) =>{
+    const post = await Post.findOne({ slug });
+    return respondWithPost(post, req, res, `https://www.ninews.ng/${encodeURIComponent(slug)}`);
 }
 
 //Delete a post
@@ -112,14 +137,27 @@ const deletePost = async(id) =>{
 
 //Update a post
 const updatePost = async(id, updatedData) =>{
-    try{
-        const updatedPost = await Post.findByIdAndUpdate(id, updatedData, { new: true });
-        return updatedPost;
+    const post = await Post.findById(id);
+    if (!post) return null;
+
+    const titleChanged = typeof updatedData.title === "string" && updatedData.title !== post.title;
+    const postUpdates = { ...updatedData };
+    delete postUpdates.slug;
+    Object.assign(post, postUpdates);
+
+    if (post.slug && titleChanged) {
+        post.slug = await generateUniqueSlug(updatedData.title, post._id);
     }
-    catch(err){
-        console.error(err);
-        throw err;
+
+    while (true) {
+        try {
+            await post.save();
+            return post;
+        } catch (error) {
+            if (!post.slug || !isDuplicateSlugError(error)) throw error;
+            post.slug = await generateUniqueSlug(post.title, post._id);
+        }
     }
 }
 
-export  {createPost, getPosts, getPost, deletePost, updatePost};
+export  {createPost, getPosts, getPost, getPostBySlug, deletePost, updatePost};
