@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { createPost, deletePost, updatePost } from "../controllers/posts.controller.js";
+import { uploadImageToUploadThing } from "../services/uploadthing.js";
 
 const adminRouter = express.Router();
 
@@ -25,6 +26,30 @@ const authenticate = (req, res, next) => {
     res.status(403).json({ error: "Invalid token" });
   }
 };
+
+const parseImageBody = express.raw({ type: "image/*", limit: "10mb" });
+
+adminRouter.post("/image/upload", authenticate, (req, res, next) => {
+  parseImageBody(req, res, (error) => {
+    if (error) {
+      return res.status(error.status || 400).json({ error: "Image upload must be an image smaller than 10 MB." });
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const url = await uploadImageToUploadThing({
+      body: req.body,
+      contentType: req.headers["content-type"],
+    });
+    return res.status(201).json({ data: { url } });
+  } catch (error) {
+    console.error("UploadThing image upload failed", error);
+    return res.status(error.status || 500).json({
+      error: error.status ? error.message : "Image upload failed. Check UploadThing configuration and try again.",
+    });
+  }
+});
 
 adminRouter.post("/post/create", authenticate, async (req, res) => {
   try {
